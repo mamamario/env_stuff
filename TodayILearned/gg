@@ -1,0 +1,7 @@
+•	Form final 56 bytes hash key after rotation and masking. This 76-byte hash key hash following fields:
+	12 bytes of Ethernet source and destination addresses
+	32 bytes of IP source and destination addresses
+	4 bytes of L4 source and destination ports
+	6 bytes of vnid or BD
+	1 byte of L3 protocol type
+	5 bytes of programmable global-id

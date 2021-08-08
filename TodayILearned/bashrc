@@ -1,0 +1,125 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+source ~/.git-prompt.sh
+
+#yum local
+export PATH="$HOME/centos/usr/sbin:$HOME/centos/usr/bin:$HOME/centos/bin:$PATH"
+L='/lib:/lib64:/usr/lib:/usr/lib64'
+export LD_LIBRARY_PATH="$L:$HOME/centos/usr/lib:$HOME/centos/usr/lib64"
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+#!/usr/bin/env bash
+# This file runs every time you open a new terminal window.
+
+# Limit number of lines and entries in the history. HISTFILESIZE controls the
+# history file on disk and HISTSIZE controls lines stored in memory.
+export HISTFILESIZE=50000
+export HISTSIZE=50000
+
+# Add a timestamp to each command.
+export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
+
+# Duplicate lines and lines starting with a space are not put into the history.
+export HISTCONTROL=ignoreboth
+
+# Append to the history file, don't overwrite it.
+shopt -s histappend
+
+# Ensure $LINES and $COLUMNS always get updated.
+shopt -s checkwinsize
+
+# Enable bash completion.
+[ -f /etc/bash_completion ] && source /etc/bash_completion
+
+# Improve output of less for binary files.
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# Load aliases if they exist.
+[ -f "${HOME}/.aliases" ] && source "${HOME}/.aliases"
+[ -f "${HOME}/.aliases.local" ] && source "${HOME}/.aliases.local"
+
+# Determine git branch.
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+# Set a non-distracting prompt.
+#a wrapper function to keep colors from polluting global space
+function _set_prompt () {
+    local R="\[\033[0m\]" #reset
+    local B="\[\033[1m\]" #bold
+    local D="\[\033[2m\]" #dim
+    local U="\[\033[4m\]" #underline
+    #took the colors _i_ think are nice and defined as vars
+    local DEFAULT="\[\033[39m\]"
+    local RED="\[\033[91m\]"
+    local GREEN="\[\033[32m\]"
+    local YELLOW="\[\033[93m\]"
+    local BLUE="\[\033[34m\]"
+    local MAGENTA="\[\033[95m\]"
+    local CYAN="\[\033[96m\]"
+    local WHITE="\[\033[97m\]"
+    local GREY="\[\033[90m\]"
+    # * == unstages
+    # + == staged changes
+    export GIT_PS1_SHOWDIRTYSTATE="1"
+    # $ next to branch named if stashed state
+    export GIT_PS1_SHOWSTASHSTATE="1"
+    # % next to branch name of untracked files
+    export GIT_PS1_SHOWUNTRACKEDFILES="1"
+    # will show state compared to upstream
+    # < you are behind upstream
+    # > you are ahead of upstream
+    # <> you have diverged from upstream
+    # = matches upstream
+    export GIT_PS1_SHOWUPSTREAM="auto"
+
+    #make that damn PS1
+    #split in lines to easy readability
+    export PS1="${debian_chroot:+($debian_chroot)}\
+${R}${GREY}[\t] ${BLUE}\w \
+\$(__git_ps1 \"${GREY}(${DEFAULT}%s${GREY})\")\n${BLUE}\$>${R} "
+    export PS2="${R}${BLUE}||${R} "
+}
+#set the prompt by calling the wrapper
+_set_prompt
+
+
+# Enable asdf to manage various programming runtime versions.
+#   Requires: https://asdf-vm.com/#/
+source "${HOME}"/.asdf/asdf.sh
+
+# Enable a better reverse search experience.
+#   Requires: https://github.com/junegunn/fzf (to use fzf in general)
+#   Requires: https://github.com/BurntSushi/ripgrep (for using rg below)
+export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
+export FZF_DEFAULT_OPTS="--color=dark"
+[ -f "${HOME}/.fzf.bash" ] && source "${HOME}/.fzf.bash"
+
+# WSL 2 specific settings.
+if grep -q "microsoft" /proc/version &>/dev/null; then
+    # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
+    export DISPLAY="$(/sbin/ip route | awk '/default/ { print $3 }'):0"
+
+    # Allows your gpg passphrase prompt to spawn (useful for signing commits).
+    export GPG_TTY=$(tty)
+fi
+
+# WSL 1 specific settings.
+if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
+    if [ "$(umask)" = "0000" ]; then
+        umask 0022
+    fi
+
+    # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
+    export DISPLAY=:0
+fi
+··

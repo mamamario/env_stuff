@@ -1,0 +1,21 @@
+username: clounix
+password: bPepx9w3YF7xBBWf
+
+lGc800430
+
+
+Lijincheng
+lGc800430
+
+ssh -i ~/.ssh/lijincheng-jumpserver.cer lijincheng@lijincheng@192.168.24.173@192.168.24.21 -p2222
+
+ssh -i ~/.ssh/lijincheng-jumpserver.cer lijincheng@ssh_user@192.168.24.173@192.168.24.21 -p2222
+
+ssh -i ~/.ssh/lijincheng-jumpserver.cer ssh_user@lijincheng@192.168.24.173@192.168.24.21 -p2222
+
+ssh -i ~/.ssh/lijincheng-jumpserver.cer -p2222 lijincheng@192.168.24.21
+
+ssh lijincheng@192.168.24.21 -p2222
+
+ssh -i ~/.ssh/lijincheng-jumpserver.cer -p2222 lijincheng@192.168.24.21
+
